@@ -108,13 +108,27 @@
           </div>
           <div style="padding:24px 22px;">
             <!--
-              This form currently opens the visitor's email client via mailto:.
-              To collect messages directly without an email client, replace the
-              form action with a form backend such as Formspree, e.g.:
-                <form action="https://formspree.io/f/yourFormId" method="POST">
-              and remove the mailto: action below.
+              ============================================================
+              ONE-TIME SETUP — REQUIRED BEFORE THIS FORM WILL WORK
+              ============================================================
+              This form uses Web3Forms (https://web3forms.com) — a free
+              service that emails form submissions straight to your inbox,
+              with no "activation/confirm" step that can silently fail.
+
+              1. Go to https://web3forms.com
+              2. Enter priyanshijain1666@gmail.com and click "Create Access Key"
+              3. Web3Forms instantly emails you a key like:
+                 a1b2c3d4-e5f6-7890-abcd-ef1234567890
+              4. Copy that key and paste it below, replacing
+                 YOUR_ACCESS_KEY_HERE
+              5. Save the file. The form will now deliver messages straight
+                 to priyanshijain1666@gmail.com — no further setup needed.
+              ============================================================
             -->
-            <form action="mailto:priyanshijain1666@gmail.com" method="post" enctype="text/plain">
+            <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" target="hidden-iframe">
+              <input type="hidden" name="access_key" value="15d1f178-d0bd-4cf6-b6f2-baed567c486b">
+              <input type="hidden" name="subject" value="New message from portfolio site">
+              <input type="hidden" name="from_name" value="Portfolio Contact Form">
               <div class="field">
                 <label for="name">Your name</label>
                 <input type="text" id="name" name="name" placeholder="Jane Recruiter" required>
@@ -125,14 +139,17 @@
               </div>
               <div class="field">
                 <label for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" placeholder="Full-stack developer role">
+                <input type="text" id="subject" name="message_subject" placeholder="Full-stack developer role">
               </div>
               <div class="field">
                 <label for="message">Message</label>
                 <textarea id="message" name="message" placeholder="Hi Priyanshi, we'd love to talk to you about..." required></textarea>
               </div>
-              <button type="submit" class="btn btn--primary btn--block">Send message</button>
+              <button type="submit" class="btn btn--primary btn--block" id="contact-submit">Send message</button>
+              <p id="contact-status" style="margin-top:14px; font-family:var(--font-mono); font-size:0.85rem; display:none;"></p>
             </form>
+            <!-- Hidden iframe: the form posts here so the page itself never navigates -->
+            <iframe name="hidden-iframe" id="hidden-iframe" style="display:none" title="form submission target"></iframe>
           </div>
         </div>
       </div>

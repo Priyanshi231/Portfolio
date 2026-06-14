@@ -88,4 +88,39 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(renderLine, 400);
   }
 
+  /* ---------- Contact form (posts into a hidden iframe, no redirect) ---------- */
+  const contactForm = document.getElementById('contact-form');
+  if (contactForm) {
+    const statusEl = document.getElementById('contact-status');
+    const submitBtn = document.getElementById('contact-submit');
+    const hiddenIframe = document.getElementById('hidden-iframe');
+    let awaitingResponse = false;
+
+    contactForm.addEventListener('submit', () => {
+      // Let the form submit normally INTO the hidden iframe (target="hidden-iframe")
+      // — do not preventDefault, since that's what avoids the page-level redirect.
+      awaitingResponse = true;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      statusEl.style.display = 'block';
+      statusEl.style.color = 'var(--text-faint)';
+      statusEl.textContent = 'Sending your message...';
+    });
+
+    if (hiddenIframe) {
+      hiddenIframe.addEventListener('load', () => {
+        // The iframe also fires "load" once on initial page load (before any
+        // submission) — ignore that first event.
+        if (!awaitingResponse) return;
+
+        awaitingResponse = false;
+        statusEl.style.color = 'var(--mint)';
+        statusEl.textContent = "Message sent — thanks! I'll get back to you soon.";
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send message';
+        contactForm.reset();
+      });
+    }
+  }
+
 });
