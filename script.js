@@ -1,132 +1,91 @@
-document.addEventListener('DOMContentLoaded', function() {
+/* =========================================================
+   PRIYANSHI JAIN — PORTFOLIO SCRIPT
+   - Typewriter effect for the hero code window (home page)
+   - Scroll-reveal for sections/cards
+   ========================================================= */
 
-    // --- Custom Cursor Logic ---
-    const cursorDot = document.querySelector('.cursor-dot');
-    const cursorOutline = document.querySelector('.cursor-outline');
-    window.addEventListener('mousemove', function(e) {
-        const posX = e.clientX;
-        const posY = e.clientY;
-        cursorDot.style.left = `${posX}px`;
-        cursorDot.style.top = `${posY}px`;
-        cursorOutline.animate({
-            left: `${posX}px`,
-            top: `${posY}px`
-        }, { duration: 500, fill: "forwards" });
-    });
-    const interactiveElements = document.querySelectorAll('a, button, .skill-card, .project-card, .timeline-dot');
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseover', () => cursorOutline.classList.add('grow'));
-        el.addEventListener('mouseleave', () => cursorOutline.classList.remove('grow'));
-    });
+document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Core UI & Navigation Logic ---
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-    const header = document.querySelector('.header');
-    const backToTopButton = document.querySelector('.back-to-top');
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
-    document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-    }));
-    window.addEventListener('scroll', () => {
-        header.classList.toggle('scrolled', window.scrollY > 50);
-        backToTopButton.classList.toggle('visible', window.scrollY > 300);
-    });
-    
-    // --- Theme Switcher ---
-    const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
-    const currentTheme = localStorage.getItem('theme');
-    if (currentTheme) {
-        body.classList.add(currentTheme);
-        if (currentTheme === 'light-mode') {
-            themeToggle.checked = true;
-        }
-    }
-    themeToggle.addEventListener('change', function() {
-        if (this.checked) {
-            body.classList.replace('dark-mode', 'light-mode');
-            localStorage.setItem('theme', 'light-mode');
-        } else {
-            body.classList.replace('light-mode', 'dark-mode');
-            localStorage.setItem('theme', 'dark-mode');
-        }
-    });
+  /* ---------- Scroll reveal ---------- */
+  const revealEls = document.querySelectorAll('.reveal');
 
-    // --- Dynamic Typing Animation for Hero ---
-    const dynamicText = document.getElementById('dynamic-text');
-    if (dynamicText) {
-        const roles = ["Software Developer", "AI Enthusiast", "Problem Solver"];
-        let roleIndex = 0;
-        function updateRole() {
-            dynamicText.style.opacity = '0';
-            setTimeout(() => {
-                roleIndex = (roleIndex + 1) % roles.length;
-                dynamicText.textContent = roles[roleIndex];
-                dynamicText.style.opacity = '1';
-            }, 500);
-        }
-        dynamicText.textContent = roles[roleIndex];
-        setInterval(updateRole, 3000);
-    }
-    
-    // --- Intersection Observer for Scroll Animations ---
+  if ('IntersectionObserver' in window && revealEls.length) {
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
 
-    // --- Active Nav Link Highlighting ---
-    const sections = document.querySelectorAll('main section[id]');
-    function navHighlighter() {
-        let scrollY = window.pageYOffset;
-        sections.forEach(current => {
-            const sectionHeight = current.offsetHeight;
-            const sectionTop = current.offsetTop - 150;
-            const sectionId = current.getAttribute('id');
-            const navLink = document.querySelector('.nav-menu a[href*=' + sectionId + ']');
-            if (navLink) {
-                navLink.classList.toggle('active', scrollY > sectionTop && scrollY <= sectionTop + sectionHeight);
-            }
-        });
-    }
-    window.addEventListener('scroll', navHighlighter);
-
-    // --- Project Filtering ---
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const projectCards = document.querySelectorAll('.project-card');
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const filter = btn.dataset.filter;
-            projectCards.forEach(card => {
-                if (filter === 'all' || card.dataset.category === filter) {
-                    card.classList.remove('hide');
-                } else {
-                    card.classList.add('hide');
-                }
-            });
-        });
+    revealEls.forEach((el, i) => {
+      el.style.transitionDelay = `${Math.min(i * 60, 300)}ms`;
+      observer.observe(el);
     });
+  } else {
+    revealEls.forEach(el => el.classList.add('is-visible'));
+  }
 
-    // --- Dynamic Footer Time ---
-    const locationTimeElement = document.getElementById('location-time');
-    function updateFooterInfo() {
-        const now = new Date();
-        const options = { timeZone: 'Asia/Kolkata', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
-        locationTimeElement.innerHTML = `Indore, India &bull; ${now.toLocaleString('en-US', options)}`;
-    }
-    updateFooterInfo();
-    setInterval(updateFooterInfo, 1000);
+  /* ---------- Hero typewriter ---------- */
+  const typeTarget = document.getElementById('typewriter');
+  if (typeTarget) {
+    const linesHTML = [
+      '<span class="tok-kw">const</span> <span class="tok-fn">developer</span> <span class="tok-punc">=</span> <span class="tok-punc">{</span>',
+      '&nbsp;&nbsp;<span class="tok-key">name</span><span class="tok-punc">:</span> <span class="tok-str">"Priyanshi Jain"</span><span class="tok-punc">,</span>',
+      '&nbsp;&nbsp;<span class="tok-key">role</span><span class="tok-punc">:</span> <span class="tok-str">"Full Stack Developer"</span><span class="tok-punc">,</span>',
+      '&nbsp;&nbsp;<span class="tok-key">based</span><span class="tok-punc">:</span> <span class="tok-str">"Indore, India"</span><span class="tok-punc">,</span>',
+      '&nbsp;&nbsp;<span class="tok-key">stack</span><span class="tok-punc">:</span> <span class="tok-punc">[</span><span class="tok-str">"Node.js"</span><span class="tok-punc">,</span> <span class="tok-str">"Express"</span><span class="tok-punc">,</span> <span class="tok-str">"MongoDB"</span><span class="tok-punc">,</span> <span class="tok-str">"React"</span><span class="tok-punc">],</span>',
+      '&nbsp;&nbsp;<span class="tok-key">cgpa</span><span class="tok-punc">:</span> <span class="tok-bool">9.22</span><span class="tok-punc">,</span>',
+      '&nbsp;&nbsp;<span class="tok-key">openToWork</span><span class="tok-punc">:</span> <span class="tok-bool">true</span><span class="tok-punc">,</span>',
+      '&nbsp;&nbsp;<span class="tok-key">currentFocus</span><span class="tok-punc">:</span> <span class="tok-str">"Building scalable, AI-powered web apps"</span>',
+      '<span class="tok-punc">};</span>'
+    ];
+
+    let lineIndex = 0;
+
+    const renderLine = () => {
+      if (lineIndex >= linesHTML.length) {
+        // remove cursor from last line, append fresh blinking cursor on new line
+        const cursors = typeTarget.querySelectorAll('.cursor');
+        cursors.forEach(c => c.remove());
+        const final = document.createElement('div');
+        final.innerHTML = '<span class="cursor"></span>';
+        typeTarget.appendChild(final);
+        return;
+      }
+
+      const row = document.createElement('div');
+      const ln = document.createElement('span');
+      ln.className = 'ln';
+      ln.textContent = lineIndex + 1;
+      row.appendChild(ln);
+
+      const content = document.createElement('span');
+      row.appendChild(content);
+      typeTarget.appendChild(content.parentElement === row ? row : row);
+
+      const html = linesHTML[lineIndex];
+      let charIndex = 0;
+
+      // Strip tags into a sequence we can reveal progressively isn't trivial with
+      // nested spans, so type the raw HTML in small chunks for a snappy effect.
+      const chunkSize = 3;
+      const typeChunk = () => {
+        charIndex += chunkSize;
+        content.innerHTML = html.slice(0, charIndex);
+        if (charIndex < html.length) {
+          requestAnimationFrame(() => setTimeout(typeChunk, 8));
+        } else {
+          content.innerHTML = html;
+          lineIndex++;
+          setTimeout(renderLine, 90);
+        }
+      };
+      typeChunk();
+    };
+
+    setTimeout(renderLine, 400);
+  }
 
 });
